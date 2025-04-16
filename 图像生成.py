@@ -23,6 +23,7 @@ def set_chinese_font():
     try:
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
         plt.rcParams['axes.unicode_minus'] = False
+        plt.rcParams['font.family'] = 'Splatoon2'
     except:
         try:
             plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
