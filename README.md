@@ -1,2 +1,4 @@
 # RankScoreVisualization
 游戏上分数据可视化
+
+用到了datetime、numpy、matplotlib、scipy等大概率不会随着Python预装的库。使用前请记得pip install一下
