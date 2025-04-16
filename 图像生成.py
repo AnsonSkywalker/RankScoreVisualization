@@ -61,7 +61,7 @@ def plot_by_session(times, scores):
     plt.tight_layout()
     plt.show()
 
-def plot_by_time(times, scores, smooth_curve=True):  # 新增smooth_curve参数
+def plot_by_time(times, scores, smooth_curve=True):
     set_chinese_font()
     plt.figure(figsize=(12, 6))
     
@@ -72,7 +72,7 @@ def plot_by_time(times, scores, smooth_curve=True):  # 新增smooth_curve参数
         dates_num_smooth = np.linspace(dates_num.min(), dates_num.max(), 300)
         spl = make_interp_spline(dates_num, scores, k=3)
         scores_smooth = spl(dates_num_smooth)
-        plt.plot(dates_num_smooth, scores_smooth, '-', color='blue', linewidth=2)  # 移除了alpha参数
+        plt.plot(dates_num_smooth, scores_smooth, '-', color='blue', linewidth=2)
     else:
         plt.plot(dates_num, scores, '-', color='blue', linewidth=2)
     
@@ -85,16 +85,36 @@ def plot_by_time(times, scores, smooth_curve=True):  # 新增smooth_curve参数
                 ha='center', va='bottom', fontsize=9, color='black')
     
     ax = plt.gca()
-    ax.xaxis.set_major_locator(HourLocator(interval=1))
-    ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
     
+    # 生成需要显示的整点时间标记
+    hour_ticks = []
+    prev_hour = None
     prev_date = None
+    
+    # 找到数据时间范围内的所有整点
     for time in times:
         current_date = time.date()
-        if current_date != prev_date:
-            plt.text(date2num([time])[0], min(scores)-5, time.strftime("%Y年%m月%d日"),
-                    rotation=45, ha='right', va='top')
+        current_hour = time.replace(minute=0, second=0, microsecond=0)
+        
+        if prev_date != current_date or (prev_hour is None or current_hour != prev_hour):
+            hour_ticks.append(current_hour)
+            prev_hour = current_hour
             prev_date = current_date
+    
+    # 生成标签（每天第一个整点显示日期）
+    hour_labels = []
+    prev_date = None
+    for h in hour_ticks:
+        current_date = h.date()
+        if current_date != prev_date:
+            hour_labels.append(h.strftime("%Y年%m月%d日\n%H:%M"))
+            prev_date = current_date
+        else:
+            hour_labels.append(h.strftime("%H:%M"))
+    
+    # 设置x轴刻度
+    ax.set_xticks(date2num(hour_ticks))
+    ax.set_xticklabels(hour_labels, rotation=45, ha='right')
     
     plt.xlabel('时间')
     plt.ylabel('分数')
