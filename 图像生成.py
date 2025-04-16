@@ -55,9 +55,9 @@ def plot_by_session(times, scores):
         plt.text(x[i], score + 0.5, str(score), 
                 ha='center', va='bottom', fontsize=9, color='black')
     plt.xticks(x, labels, rotation=45, ha='right')
-    plt.xlabel('场次 (带时间信息)', fontproperties='simhei')
-    plt.ylabel('分数', fontproperties='simhei')
-    plt.title('分数变化趋势 (按场次)', fontproperties='simhei')
+    plt.xlabel('场次 (带时间信息)')
+    plt.ylabel('分数')
+    plt.title('分数变化趋势 (按场次)')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
     plt.show()
@@ -94,12 +94,12 @@ def plot_by_time(times, scores, smooth_curve=True):  # 新增smooth_curve参数
         current_date = time.date()
         if current_date != prev_date:
             plt.text(date2num([time])[0], min(scores)-5, time.strftime("%Y年%m月%d日"),
-                    rotation=45, ha='right', va='top', fontproperties='simhei')
+                    rotation=45, ha='right', va='top')
             prev_date = current_date
     
-    plt.xlabel('时间', fontproperties='simhei')
-    plt.ylabel('分数', fontproperties='simhei')
-    plt.title(f'分数变化趋势 (按时间) - {"平滑" if smooth_curve else "折线"}模式', fontproperties='simhei')
+    plt.xlabel('时间')
+    plt.ylabel('分数')
+    plt.title(f'分数变化趋势 (按时间) - {"平滑" if smooth_curve else "折线"}模式')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
     plt.show()
