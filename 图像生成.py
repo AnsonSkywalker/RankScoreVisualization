@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import csv
 from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator, date2num
-from matplotlib.font_manager import FontProperties
 from scipy.interpolate import make_interp_spline
 
 def load_csv(filename):
@@ -55,9 +54,9 @@ def plot_by_session(times, scores):
         plt.text(x[i], score + 0.5, str(score), 
                 ha='center', va='bottom', fontsize=9, color='black')
     plt.xticks(x, labels, rotation=45, ha='right')
-    plt.xlabel('场次 (带时间信息)')
+    plt.xlabel('场次 ')
     plt.ylabel('分数')
-    plt.title('分数变化趋势 (按场次)')
+    plt.title('上分趋势 (按场次)')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
     plt.show()
@@ -99,13 +98,15 @@ def plot_by_time(times, scores, smooth_curve=True):  # 新增smooth_curve参数
     
     plt.xlabel('时间')
     plt.ylabel('分数')
-    plt.title(f'分数变化趋势 (按时间) - {"平滑" if smooth_curve else "折线"}模式')
+    plt.title(f'上分趋势 (按时间) - {"平滑" if smooth_curve else "折线"}模式')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
     plt.show()
 
 def main():
-    filename = input("请输入要打开的CSV文件名（例如：data.csv）：")
+    filename = input("请输入要打开的CSV文件名：")
+    if not filename.endswith('.csv'):
+        filename += '.csv'
     try:
         times, scores = load_csv(filename)
     except FileNotFoundError:
@@ -120,7 +121,7 @@ def main():
     if mode == '1':
         plot_by_session(times, scores)
     elif mode == '2':
-        # 新增平滑曲线/折线模式选择
+        # 平滑曲线/折线模式选择
         smooth_mode = input("请选择时间模式下的曲线类型（输入1或2）：\n1. 平滑曲线\n2. 折线\n")
         plot_by_time(times, scores, smooth_curve=(smooth_mode == '1'))
     else:
