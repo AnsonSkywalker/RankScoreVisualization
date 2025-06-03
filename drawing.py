@@ -35,7 +35,7 @@ def set_chinese_font():
             except:
                 print("警告: 无法找到合适的中文字体，中文显示可能不正常")
 
-def plot_by_session(times, scores):
+def plot_by_session(times, scores, smooth_curve=True):
     set_chinese_font()
     x = np.arange(len(times))
     labels = []
@@ -49,14 +49,28 @@ def plot_by_session(times, scores):
             labels.append(time.strftime("%H:%M"))
     
     plt.figure(figsize=(12, 6))
-    plt.plot(x, scores, linestyle='-', color='blue', linewidth=2)
+    
+    # 绘制平滑曲线或普通折线
+    if smooth_curve and len(times) > 3:
+        x_smooth = np.linspace(x.min(), x.max(), 300)
+        spl = make_interp_spline(x, scores, k=3)
+        scores_smooth = spl(x_smooth)
+        plt.plot(x_smooth, scores_smooth, '-', color='blue', linewidth=2)
+    else:
+        plt.plot(x, scores, '-', color='blue', linewidth=2)
+    
+    # 绘制原始数据点
+    plt.plot(x, scores, 'o', color='blue', markersize=6)
+    
+    # 添加分数标签
     for i, score in enumerate(scores):
         plt.text(x[i], score + 0.5, str(score), 
                 ha='center', va='bottom', fontsize=9, color='black')
+    
     plt.xticks(x, labels, rotation=45, ha='right')
     plt.xlabel('场次 ')
     plt.ylabel('分数')
-    plt.title('上分趋势 (按场次)')
+    plt.title(f'上分趋势 (按场次) - {"平滑" if smooth_curve else "折线"}模式')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
     plt.show()
@@ -138,12 +152,14 @@ def main():
     
     mode = input("请选择横轴模式（输入1或2）：\n1. 场次\n2. 时间\n")
     
+    # 平滑曲线/折线模式选择
+    smooth_mode = input("请选择曲线类型（输入1或2）：\n1. 平滑曲线\n2. 折线\n")
+    smooth_curve = (smooth_mode == '1')
+    
     if mode == '1':
-        plot_by_session(times, scores)
+        plot_by_session(times, scores, smooth_curve)
     elif mode == '2':
-        # 平滑曲线/折线模式选择
-        smooth_mode = input("请选择时间模式下的曲线类型（输入1或2）：\n1. 平滑曲线\n2. 折线\n")
-        plot_by_time(times, scores, smooth_curve=(smooth_mode == '1'))
+        plot_by_time(times, scores, smooth_curve)
     else:
         print("无效的选择，请输入1或2。")
 
