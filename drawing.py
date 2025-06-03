@@ -7,6 +7,10 @@ from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator, date2num
 from scipy.interpolate import make_interp_spline
 
+def get_desktop_path():
+    """获取Windows桌面路径"""
+    return os.path.join(os.path.expanduser("~"), "Desktop")
+
 def select_csv_file():
     """选择现有的记录文件"""
     csv_files = [f for f in os.listdir() if f.endswith('.csv')]
@@ -47,7 +51,7 @@ def load_csv(filename=None):
                 time_obj = datetime.strptime(time_str, "%Y-%m-%d-%H-%M")
                 times.append(time_obj)
                 scores.append(int(score))
-        return times, scores
+        return filename, times, scores
     except FileNotFoundError:
         print(f"错误：文件 '{filename}' 未找到。")
         sys.exit(1)
@@ -72,7 +76,7 @@ def set_chinese_font():
             except:
                 print("警告: 无法找到合适的中文字体，中文显示可能不正常")
 
-def plot_by_session(times, scores, smooth_curve=True):
+def plot_by_session(filename, times, scores, smooth_curve=True):
     set_chinese_font()
     x = np.arange(len(times))
     labels = []
@@ -110,9 +114,18 @@ def plot_by_session(times, scores, smooth_curve=True):
     plt.title(f'上分趋势 (按场次) - {"平滑" if smooth_curve else "折线"}模式')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
+    
+    # 保存图像到桌面
+    desktop_path = get_desktop_path()
+    base_name = os.path.splitext(os.path.basename(filename))[0]
+    save_name = f"{base_name}_场次_{'平滑' if smooth_curve else '折线'}.png"
+    save_path = os.path.join(desktop_path, save_name)
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"图像已保存到桌面: {save_path}")
+    
     plt.show()
 
-def plot_by_time(times, scores, smooth_curve=True):
+def plot_by_time(filename, times, scores, smooth_curve=True):
     set_chinese_font()
     plt.figure(figsize=(12, 6))
     
@@ -172,12 +185,21 @@ def plot_by_time(times, scores, smooth_curve=True):
     plt.title(f'上分趋势 (按时间) - {"平滑" if smooth_curve else "折线"}模式')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout()
+    
+    # 保存图像到桌面
+    desktop_path = get_desktop_path()
+    base_name = os.path.splitext(os.path.basename(filename))[0]
+    save_name = f"{base_name}_时间_{'平滑' if smooth_curve else '折线'}.png"
+    save_path = os.path.join(desktop_path, save_name)
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"图像已保存到桌面: {save_path}")
+    
     plt.show()
 
 def main():
     print("图像绘制程序")
     # 自动列出并选择CSV文件
-    times, scores = load_csv()
+    filename, times, scores = load_csv()
     
     mode = input("请选择横轴模式（输入1或2）：\n1. 场次\n2. 时间\n")
     
@@ -186,9 +208,9 @@ def main():
     smooth_curve = (smooth_mode == '1')
     
     if mode == '1':
-        plot_by_session(times, scores, smooth_curve)
+        plot_by_session(filename, times, scores, smooth_curve)
     elif mode == '2':
-        plot_by_time(times, scores, smooth_curve)
+        plot_by_time(filename, times, scores, smooth_curve)
     else:
         print("无效的选择，请输入1或2。")
 
