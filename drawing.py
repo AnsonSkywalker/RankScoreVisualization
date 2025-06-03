@@ -60,21 +60,8 @@ def load_csv(filename=None):
         sys.exit(1)
 
 def set_chinese_font():
-    try:
-        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-        plt.rcParams['axes.unicode_minus'] = False
-    except:
-        try:
-            plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
-            plt.rcParams['axes.unicode_minus'] = False
-        except:
-            try:
-                font_path = '/usr/share/fonts/truetype/wqy/wqy-microhei.ttc'
-                font_prop = FontProperties(fname=font_path)
-                plt.rcParams['font.family'] = font_prop.get_name()
-                plt.rcParams['axes.unicode_minus'] = False
-            except:
-                print("警告: 无法找到合适的中文字体，中文显示可能不正常")
+    plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+    plt.rcParams['axes.unicode_minus'] = False
 
 def plot_by_session(filename, times, scores, smooth_curve=True):
     set_chinese_font()
