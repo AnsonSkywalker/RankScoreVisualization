@@ -1,22 +1,59 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import os
+import sys
 from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator, date2num
 from scipy.interpolate import make_interp_spline
 
-def load_csv(filename):
+def select_csv_file():
+    """选择现有的记录文件"""
+    csv_files = [f for f in os.listdir() if f.endswith('.csv')]
+    if not csv_files:
+        print("没有找到CSV文件。")
+        sys.exit(1)
+        
+    print("可用的CSV文件：")
+    for i, file in enumerate(csv_files, 1):
+        print(f"{i}. {file}")
+        
+    while True:
+        try:
+            choice = input("请输入要打开的文件编号（或输入q退出）：").strip()
+            if choice.lower() == 'q':
+                sys.exit(0)
+                
+            choice_idx = int(choice) - 1
+            if 0 <= choice_idx < len(csv_files):
+                return csv_files[choice_idx]
+            else:
+                print("错误：请输入有效的文件编号！")
+        except ValueError:
+            print("错误：请输入一个数字！")
+
+def load_csv(filename=None):
+    if filename is None:
+        filename = select_csv_file()
+    
     times = []
     scores = []
-    with open(filename, 'r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)  # 跳过表头
-        for row in reader:
-            time_str, score = row
-            time_obj = datetime.strptime(time_str, "%Y-%m-%d-%H-%M")
-            times.append(time_obj)
-            scores.append(int(score))
-    return times, scores
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            next(reader)  # 跳过表头
+            for row in reader:
+                time_str, score = row
+                time_obj = datetime.strptime(time_str, "%Y-%m-%d-%H-%M")
+                times.append(time_obj)
+                scores.append(int(score))
+        return times, scores
+    except FileNotFoundError:
+        print(f"错误：文件 '{filename}' 未找到。")
+        sys.exit(1)
+    except Exception as e:
+        print(f"读取文件时出错：{e}")
+        sys.exit(1)
 
 def set_chinese_font():
     try:
@@ -138,17 +175,9 @@ def plot_by_time(times, scores, smooth_curve=True):
     plt.show()
 
 def main():
-    filename = input("请输入要打开的CSV文件名：")
-    if not filename.endswith('.csv'):
-        filename += '.csv'
-    try:
-        times, scores = load_csv(filename)
-    except FileNotFoundError:
-        print(f"错误：文件 '{filename}' 未找到。")
-        return
-    except Exception as e:
-        print(f"读取文件时出错：{e}")
-        return
+    print("图像绘制程序")
+    # 自动列出并选择CSV文件
+    times, scores = load_csv()
     
     mode = input("请选择横轴模式（输入1或2）：\n1. 场次\n2. 时间\n")
     
