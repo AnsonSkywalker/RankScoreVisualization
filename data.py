@@ -30,6 +30,29 @@ def validate_score_change(change_str):
         print("错误：请输入一个有效的整数！")
         return None
 
+def check_format(filename):
+    """检查并修复文件格式，确保以换行符结尾且无多余空行"""
+    try:
+        with open(filename, 'r+', newline='') as file:
+            lines = file.readlines()
+            if not lines:
+                return  # 空文件，无需处理
+            
+            # 移除多余的空行
+            cleaned_lines = [line for line in lines if line.strip() != '']
+            
+            # 确保最后一行以换行符结尾
+            if cleaned_lines and not cleaned_lines[-1].endswith('\n'):
+                cleaned_lines[-1] = cleaned_lines[-1] + '\n'
+            
+            # 重新写入文件
+            file.seek(0)
+            file.writelines(cleaned_lines)
+            file.truncate()
+    except IOError as e:
+        print(f"检查文件格式时出错: {e}")
+        sys.exit(1)
+
 def create_new_record():
     """创建新的记录文件"""
     while True:
@@ -85,6 +108,8 @@ def select_existing_record():
             choice_idx = int(choice) - 1
             if 0 <= choice_idx < len(csv_files):
                 filename = csv_files[choice_idx]
+                # 检查并修复文件格式
+                check_and_fix_file_format(filename)
                 # 获取最后一行数据以确定当前分数（跳过表头）
                 with open(filename, 'r') as file:
                     reader = csv.reader(file)
@@ -103,7 +128,7 @@ def select_existing_record():
 def work_mode(filename, current_score):
     """工作模式，处理用户输入并记录数据"""
     print("\n进入工作模式。输入分数变化（-20、-10、-5、0或20），或输入'q'退出。")
-    print(f"当前分数:传说 {current_score}")
+    print(f"当前分数:{current_score}")
     
     while True:
         change_input = input("请输入分数变化：").strip()
@@ -116,6 +141,9 @@ def work_mode(filename, current_score):
             # 计算新分数
             new_score = current_score + validated_change
                 
+            # 记录数据前再次检查文件格式
+            check_and_fix_file_format(filename)
+            
             # 记录数据
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
             try:
@@ -129,7 +157,7 @@ def work_mode(filename, current_score):
                 sys.exit(1)
 
 def main():
-    print("数据收集程序")
+    print("//////////数据收集程序//////////")
     print("1. 创建新的记录")
     print("2. 继续先前的记录")
     

@@ -184,7 +184,7 @@ def plot_by_time(filename, times, scores, smooth_curve=True):
     plt.show()
 
 def main():
-    print("图像绘制程序")
+    print("//////////图像绘制程序//////////")
     # 自动列出并选择CSV文件
     filename, times, scores = load_csv()
     
