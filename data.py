@@ -109,7 +109,7 @@ def select_existing_record():
             if 0 <= choice_idx < len(csv_files):
                 filename = csv_files[choice_idx]
                 # 检查并修复文件格式
-                check_and_fix_file_format(filename)
+                check_format(filename)
                 # 获取最后一行数据以确定当前分数（跳过表头）
                 with open(filename, 'r') as file:
                     reader = csv.reader(file)
@@ -142,7 +142,7 @@ def work_mode(filename, current_score):
             new_score = current_score + validated_change
                 
             # 记录数据前再次检查文件格式
-            check_and_fix_file_format(filename)
+            check_format(filename)
             
             # 记录数据
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
