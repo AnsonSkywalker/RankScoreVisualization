@@ -96,6 +96,9 @@ def select_existing_record():
         return None
         
     print("现有的记录文件：")
+    # 按修改时间倒序排列
+    csv_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    
     for i, file in enumerate(csv_files, 1):
         print(f"{i}. {file}")
         
@@ -126,7 +129,6 @@ def select_existing_record():
             print("错误：请输入一个数字！")
 
 def work_mode(filename, current_score):
-    """工作模式，处理用户输入并记录数据"""
     print("\n进入工作模式。输入分数变化（-20、-10、-5、0或20），或输入'q'退出。")
     print(f"当前分数:{current_score}")
     
